@@ -1,3 +1,8 @@
+1.0.1.ub1404lts - June 01, 2015
+
+- FIX in modules for nova, cinder, sahara and uninstall in order
+  to prevent lock directories deletion on boot/reboot.
+
 1.0.0.ub1404lts - May 26, 2015
 
 - All main modules fully integrated to the installer:

@@ -209,8 +209,8 @@ rm -fr  /etc/qpid \
 	/var/lib/trove \
 	/var/cache/trove \
 	/var/log/trove \
-        /var/lock/cinder \
-        /var/lock/nova
+        /var/oslock/cinder \
+        /var/oslock/nova
 
 
 

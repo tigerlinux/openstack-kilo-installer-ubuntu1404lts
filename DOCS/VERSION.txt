@@ -1,5 +1,5 @@
 Installer Version:
 
-1.0.0.ub1404lts "Leopardus Pardalis"
+1.0.1.ub1404lts "Leopardus Pardalis"
 
 ONLY FOR OPENSTACK 2015.1 "KILO"
