@@ -249,6 +249,7 @@ sed -r -i "s/CUSTOM_DASHBOARD_dashboard_timezone/$dashboard_timezone/" /etc/open
 sed -r -i "s/CUSTOM_DASHBOARD_keystonehost/$keystonehost/" /etc/openstack-dashboard/local_settings.py
 sed -r -i "s/CUSTOM_DASHBOARD_SERVICE_TOKEN/$SERVICE_TOKEN/" /etc/openstack-dashboard/local_settings.py
 sed -r -i "s/CUSTOM_DASHBOARD_keystonememberrole/$keystonememberrole/" /etc/openstack-dashboard/local_settings.py
+sed -r -i "s/OSINSTALLER_KEYSTONE_MEMBER/$keystonememberrole/" /etc/openstack-dashboard/local_settings.py
 
 
 if [ $vpnaasinstall == "yes" ]
@@ -306,8 +307,8 @@ then
                 ;;
         esac
 
-        /usr/share/openstack-dashboard/manage.py syncdb --noinput
-        /usr/share/openstack-dashboard/manage.py createsuperuser --username=root --email=root@localhost.tld --noinput
+        # /usr/share/openstack-dashboard/manage.py syncdb --noinput
+        # /usr/share/openstack-dashboard/manage.py createsuperuser --username=root --email=root@localhost.tld --noinput
         mkdir -p /var/lib/dash/.blackhole
         /usr/share/openstack-dashboard/manage.py syncdb --noinput
 	/usr/share/openstack-dashboard/manage.py createcachetable openstack_db_cache
@@ -340,12 +341,6 @@ iptables -A INPUT -p tcp -m multiport --dports 80,443,11211 -j ACCEPT
 echo "Done"
 echo ""
 echo "Starting Services"
-
-# a2dissite openstack-dashboard-ssl.conf
-# a2dissite openstack-dashboard-ssl-redirect.conf
-# a2dissite default
-# a2dissite default-ssl
-# a2ensite openstack-dashboard.conf
 
 a2enmod wsgi
 

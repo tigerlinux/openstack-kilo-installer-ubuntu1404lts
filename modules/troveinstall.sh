@@ -227,15 +227,10 @@ echo ""
 echo "Configuring Trove"
 echo ""
 
-# cat ./libs/trove/trove.conf > /etc/trove/trove.conf
-# cat ./libs/trove/trove-taskmanager.conf > /etc/trove/trove-taskmanager.conf
-# cat ./libs/trove/api-paste.ini > /etc/trove/api-paste.ini
-
 sync
 sleep 5
 sync
 
-# cat /usr/share/trove-conductor/trove-conductor.conf > /etc/trove/trove-conductor.conf
  
 commonfile='
 	/etc/trove/trove.conf
@@ -342,24 +337,12 @@ troveworkers=`grep processor.\*: /proc/cpuinfo |wc -l`
  
 crudini --set /etc/trove/trove.conf DEFAULT trove_api_workers $troveworkers
  
-# crudini --set /etc/trove/api-paste.ini filter:authtoken admin_tenant_name $troveuser
-# crudini --set /etc/trove/api-paste.ini filter:authtoken admin_user $troveuser
-# crudini --set /etc/trove/api-paste.ini filter:authtoken admin_password $trovepass
-# crudini --set /etc/trove/api-paste.ini filter:authtoken auth_host $keystonehost
-# crudini --set /etc/trove/api-paste.ini filter:authtoken auth_port 35357
-# crudini --set /etc/trove/api-paste.ini filter:authtoken auth_protocol http
-# crudini --set /etc/trove/api-paste.ini filter:authtoken auth_uri http://$keystonehost:5000/v2.0/
-# crudini --set /etc/trove/api-paste.ini filter:authtoken identity_uri http://$keystonehost:35357
-# crudini --set /etc/trove/api-paste.ini filter:authtoken signing_dir /var/cache/trove
- 
 crudini --set /etc/trove/trove.conf keystone_authtoken admin_tenant_name $troveuser
 crudini --set /etc/trove/trove.conf keystone_authtoken admin_user $troveuser
 crudini --set /etc/trove/trove.conf keystone_authtoken admin_password $trovepass
 crudini --set /etc/trove/trove.conf keystone_authtoken auth_host $keystonehost
 crudini --set /etc/trove/trove.conf keystone_authtoken auth_port 35357
 crudini --set /etc/trove/trove.conf keystone_authtoken auth_protocol http
-# crudini --set /etc/trove/trove.conf keystone_authtoken auth_uri http://$keystonehost:5000/v2.0/
-# crudini --set /etc/trove/trove.conf keystone_authtoken identity_uri http://$keystonehost:35357
 crudini --set /etc/trove/trove.conf keystone_authtoken signing_dir /var/cache/trove
 crudini --set /etc/trove/trove.conf keystone_authtoken auth_uri http://$keystonehost:5000
 crudini --set /etc/trove/trove.conf keystone_authtoken auth_url http://$keystonehost:35357

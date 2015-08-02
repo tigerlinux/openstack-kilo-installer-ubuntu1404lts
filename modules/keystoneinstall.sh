@@ -55,8 +55,6 @@ then
 	OS_USERNAME=$keystoneadminuser
 	OS_TENANT_NAME=$keystoneadminuser
 	OS_PASSWORD=$keystoneadminpass
-	# OS_AUTH_URL="http://$keystonehost:35357/v2.0/"
-	# OS_AUTH_URL="http://$keystonehost:5000/v2.0/"
 	OS_AUTH_URL="http://$keystonehost:5000/v2.0"
 
 	echo "# export SERVICE_ENDPOINT=$SERVICE_ENDPOINT" > $keystone_admin_rc_file
@@ -145,9 +143,6 @@ echo "Done"
 #
 
 echo $SERVICE_TOKEN > /root/ks_admin_token
-# export SERVICE_TOKEN
-# OS_SERVICE_TOKEN=$SERVICE_TOKEN
-# export OS_SERVICE_TOKEN
 export OS_TOKEN=$SERVICE_TOKEN
 
 echo ""
@@ -158,11 +153,6 @@ echo "Configuring Keystone"
 #
 
 crudini --set /etc/keystone/keystone.conf DEFAULT admin_token $SERVICE_TOKEN
-# crudini --set /etc/keystone/keystone.conf DEFAULT bind_host 0.0.0.0
-# crudini --set /etc/keystone/keystone.conf eventlet_server public_port 5000
-# crudini --set /etc/keystone/keystone.conf eventlet_server admin_port 35357
-# crudini --set /etc/keystone/keystone.conf eventlet_server public_bind_host 0.0.0.0
-# crudini --set /etc/keystone/keystone.conf eventlet_server admin_bind_host 0.0.0.0
 crudini --set /etc/keystone/keystone.conf DEFAULT compute_port 8774
 crudini --set /etc/keystone/keystone.conf DEFAULT debug False
 crudini --set /etc/keystone/keystone.conf DEFAULT verbose False
@@ -183,7 +173,6 @@ esac
 crudini --set /etc/keystone/keystone.conf catalog driver keystone.catalog.backends.sql.Catalog
 crudini --set /etc/keystone/keystone.conf token expiration 86400
 # Since KILO, we use memcache as persistence token cache. That is included on KILO documentation
-# crudini --set /etc/keystone/keystone.conf token driver keystone.token.persistence.backends.sql.Token
 crudini --set /etc/keystone/keystone.conf token driver keystone.token.persistence.backends.memcache.Token
 crudini --set /etc/keystone/keystone.conf revoke driver keystone.contrib.revoke.backends.sql.Revoke
 
@@ -285,7 +274,6 @@ echo ""
 #
 
 echo "Creating Keystone Service Endpoint"
-# export SERVICE_ENDPOINT="http://$keystonehost:35357/v2.0"
 export OS_URL="http://$keystonehost:35357/v2.0"
 
 openstack service create \
@@ -346,7 +334,6 @@ SERVICE_ENDPOINT="http://$keystonehost:35357/v2.0"
 OS_USERNAME=$keystoneadminuser
 OS_TENANT_NAME=$keystoneadminuser
 OS_PASSWORD=$keystoneadminpass
-# OS_AUTH_URL="http://$keystonehost:35357/v2.0/"
 OS_AUTH_URL="http://$keystonehost:5000/v2.0/"
 
 echo "# export SERVICE_ENDPOINT=$SERVICE_ENDPOINT" > $keystone_admin_rc_file

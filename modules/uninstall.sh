@@ -224,6 +224,10 @@ rm -f /usr/local/bin/openstack-log-cleaner.sh
 rm -f /usr/local/bin/openstack-keystone-tokenflush.sh
 rm -f /usr/local/bin/openstack-vm-boot-start.sh
 rm -f /etc/cron.d/keystone-flush-crontab
+rm -rf /var/www/cgi-bin/keystone
+rm -f /etc/apache2/sites-enabled/wsgi-keystone.conf
+rm -f /etc/apache2/sites-available/wsgi-keystone.conf
+rm -f /etc/libvirt/qemu/$instance_name_template*.xml
 
 #
 # Restore original snmpd configuration
@@ -306,6 +310,16 @@ then
 		;;
 	esac
 	DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
+fi
+
+#
+# Clean Up Cinder LV's
+
+if [ $cindercleanatuninstall == "yes" ]
+then
+	echo ""
+	echo "Cleaning Up Cinder Volume LV: $cinderlvmname"
+	lvremove -f $cinderlvmname 2>/dev/null
 fi
 
 echo ""

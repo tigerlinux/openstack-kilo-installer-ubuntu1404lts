@@ -66,7 +66,6 @@ then
 		echo "mariadb-server-5.5 mysql-server/root_password password $mysqldbpassword" >> /tmp/mysql-seed.txt
 		debconf-set-selections /tmp/mysql-seed.txt
 		# No more mysql - we'll use MariaDB !!
-		# aptitude -y install mysql-server-5.5 mysql-client-5.5
 		aptitude -y install mariadb-server-5.5 mariadb-client-5.5
 		sed -r -i 's/127\.0\.0\.1/0\.0\.0\.0/' /etc/mysql/my.cnf
 		service mysql restart

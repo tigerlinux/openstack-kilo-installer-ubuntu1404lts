@@ -331,8 +331,6 @@ crudini --set /etc/neutron/neutron.conf DEFAULT log_dir /var/log/neutron
 crudini --set /etc/neutron/neutron.conf DEFAULT bind_host 0.0.0.0
 crudini --set /etc/neutron/neutron.conf DEFAULT bind_port 9696
 crudini --set /etc/neutron/neutron.conf DEFAULT core_plugin ml2
-# Just in case....
-# crudini --set /etc/neutron/neutron.conf DEFAULT core_plugin neutron.plugins.ml2.plugin.Ml2Plugin
 crudini --set /etc/neutron/neutron.conf DEFAULT auth_strategy keystone
 crudini --set /etc/neutron/neutron.conf DEFAULT base_mac "$basemacspec"
 crudini --set /etc/neutron/neutron.conf DEFAULT mac_generation_retries 16
@@ -357,15 +355,7 @@ crudini --set /etc/neutron/neutron.conf DEFAULT api_paste_config api-paste.ini
  
 case $brokerflavor in
 "qpid")
-	# crudini --set /etc/neutron/neutron.conf DEFAULT rpc_backend neutron.openstack.common.rpc.impl_qpid
 	crudini --set /etc/neutron/neutron.conf DEFAULT rpc_backend qpid
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_hostname $messagebrokerhost
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_port 5672
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_username $brokeruser
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_password $brokerpass
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_heartbeat 60
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_protocol tcp
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_tcp_nodelay True
 	crudini --set /etc/neutron/neutron.conf DEFAULT notification_driver neutron.openstack.common.notifier.rpc_notifier
 	crudini --set /etc/neutron/neutron.conf oslo_messaging_qpid qpid_hostname $messagebrokerhost
 	crudini --set /etc/neutron/neutron.conf oslo_messaging_qpid qpid_port 5672
@@ -377,17 +367,7 @@ case $brokerflavor in
 	;;
  
 "rabbitmq")
-	# crudini --set /etc/neutron/neutron.conf DEFAULT rpc_backend neutron.openstack.common.rpc.impl_kombu
 	crudini --set /etc/neutron/neutron.conf DEFAULT rpc_backend rabbit
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_host $messagebrokerhost
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_password $brokerpass
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_userid $brokeruser
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_port 5672
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_use_ssl false
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_virtual_host $brokervhost
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_max_retries 0
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_retry_interval 1
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_ha_queues false
 	crudini --set /etc/neutron/neutron.conf DEFAULT notification_driver neutron.openstack.common.notifier.rpc_notifier
 	crudini --set /etc/neutron/neutron.conf oslo_messaging_rabbit rabbit_host $messagebrokerhost
 	crudini --set /etc/neutron/neutron.conf oslo_messaging_rabbit rabbit_password $brokerpass
@@ -410,14 +390,6 @@ crudini --set /etc/neutron/neutron.conf agent root_helper "sudo neutron-rootwrap
 # Neutron Keystone Config
 #
  
-# crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_host $keystonehost
-# crudini --set /etc/neutron/neutron.conf keystone_authtoken admin_tenant_name $keystoneservicestenant
-# crudini --set /etc/neutron/neutron.conf keystone_authtoken admin_user $neutronuser
-# crudini --set /etc/neutron/neutron.conf keystone_authtoken admin_password $neutronpass
-# crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_port 35357
-# crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_protocol http
-# crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_uri http://$keystonehost:5000/v2.0
-# crudini --set /etc/neutron/neutron.conf keystone_authtoken identity_uri http://$keystonehost:35357
 crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_uri http://$keystonehost:5000
 crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_url http://$keystonehost:35357
 crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_plugin password
@@ -632,20 +604,8 @@ ln -f -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
 #
 
 echo "#" >> /etc/neutron/metadata_agent.ini
-# echo "#" >> /etc/neutron/api-paste.ini
- 
-# crudini --set /etc/neutron/api-paste.ini filter:authtoken paste.filter_factory "keystonemiddleware.auth_token:filter_factory"
-# crudini --set /etc/neutron/api-paste.ini filter:authtoken auth_protocol http
-# crudini --set /etc/neutron/api-paste.ini filter:authtoken auth_host $keystonehost
-# crudini --set /etc/neutron/api-paste.ini filter:authtoken admin_tenant_name $keystoneservicestenant
-# crudini --set /etc/neutron/api-paste.ini filter:authtoken admin_user $neutronuser
-# crudini --set /etc/neutron/api-paste.ini filter:authtoken admin_password $neutronpass
-# crudini --set /etc/neutron/api-paste.ini filter:authtoken auth_port 35357
-# crudini --set /etc/neutron/api-paste.ini filter:authtoken auth_uri http://$keystonehost:5000/v2.0/
-# crudini --set /etc/neutron/api-paste.ini filter:authtoken identity_uri http://$keystonehost:35357
  
 crudini --set /etc/neutron/metadata_agent.ini DEFAULT debug False
-# crudini --set /etc/neutron/metadata_agent.ini DEFAULT auth_url "http://$keystonehost:35357/v2.0"
 crudini --set /etc/neutron/metadata_agent.ini DEFAULT auth_region $endpointsregion
 crudini --set /etc/neutron/metadata_agent.ini DEFAULT admin_tenant_name $keystoneservicestenant
 crudini --set /etc/neutron/metadata_agent.ini DEFAULT admin_user $neutronuser
@@ -705,15 +665,7 @@ sync
  
 case $brokerflavor in
 "qpid")
-	# crudini --set /etc/neutron/neutron.conf DEFAULT rpc_backend neutron.openstack.common.rpc.impl_qpid
 	crudini --set /etc/neutron/neutron.conf DEFAULT rpc_backend qpid
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_hostname $messagebrokerhost
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_port 5672
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_username $brokeruser
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_password $brokerpass
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_heartbeat 60
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_protocol tcp
-	crudini --set /etc/neutron/neutron.conf DEFAULT qpid_tcp_nodelay True
 	crudini --set /etc/neutron/neutron.conf DEFAULT notification_driver neutron.openstack.common.notifier.rpc_notifier
 	crudini --set /etc/neutron/neutron.conf oslo_messaging_qpid qpid_hostname $messagebrokerhost
 	crudini --set /etc/neutron/neutron.conf oslo_messaging_qpid qpid_port 5672
@@ -725,17 +677,7 @@ case $brokerflavor in
 	;;
  
 "rabbitmq")
-	# crudini --set /etc/neutron/neutron.conf DEFAULT rpc_backend neutron.openstack.common.rpc.impl_kombu
 	crudini --set /etc/neutron/neutron.conf DEFAULT rpc_backend rabbit
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_host $messagebrokerhost
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_password $brokerpass
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_userid $brokeruser
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_port 5672
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_use_ssl false
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_virtual_host $brokervhost
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_max_retries 0
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_retry_interval 1
-	crudini --set /etc/neutron/neutron.conf DEFAULT rabbit_ha_queues false
 	crudini --set /etc/neutron/neutron.conf DEFAULT notification_driver neutron.openstack.common.notifier.rpc_notifier
 	crudini --set /etc/neutron/neutron.conf oslo_messaging_rabbit rabbit_host $messagebrokerhost
 	crudini --set /etc/neutron/neutron.conf oslo_messaging_rabbit rabbit_password $brokerpass

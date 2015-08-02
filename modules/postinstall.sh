@@ -85,7 +85,7 @@ service cron reload
 #
 
 echo ""
-echo "Restaring all OpenStack Services and Cleaning UP all logs !"
+echo "Re-starting all OpenStack Services and Cleaning UP all logs !"
 echo ""
 
 /usr/local/bin/openstack-control.sh stop
