@@ -144,6 +144,10 @@ else
 	DEBIAN_FRONTEND=noninteractive aptitude -y install ceilometer-agent-compute libnspr4 libnspr4-dev python-libxslt1
 fi
 
+#
+# FIX - Added extra module for ceilometer
+DEBIAN_FRONTEND=noninteractive aptitude -y install python-awsauth
+
 echo "Done"
 echo ""
 
@@ -233,7 +237,9 @@ crudini --set /etc/ceilometer/ceilometer.conf database connection "mongodb://$mo
 crudini --set /etc/ceilometer/ceilometer.conf database metering_time_to_live $mongodbttl
 crudini --set /etc/ceilometer/ceilometer.conf database time_to_live $mongodbttl
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT log_dir /var/log/ceilometer
-crudini --set /etc/ceilometer/ceilometer.conf rpc_notifier2 topics notifications,glance_notifications
+# Deprecated
+# crudini --set /etc/ceilometer/ceilometer.conf rpc_notifier2 topics notifications,glance_notifications
+crudini --set /etc/ceilometer/ceilometer.conf DEFAULT notification_topics notifications,glance_notifications
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT policy_file policy.json
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT policy_default_rule default
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT dispatcher database
@@ -282,7 +288,7 @@ crudini --set /etc/ceilometer/ceilometer.conf DEFAULT instance_name_template $in
 crudini --set /etc/ceilometer/ceilometer.conf service_types neutron network
 crudini --set /etc/ceilometer/ceilometer.conf service_types nova compute
 crudini --set /etc/ceilometer/ceilometer.conf service_types swift object-store
-crudini --set /etc/ceilometer/ceilometer.conf service_types glance images
+crudini --set /etc/ceilometer/ceilometer.conf service_types glance image
 crudini --del /etc/ceilometer/ceilometer.conf service_types kwapi
 
 #

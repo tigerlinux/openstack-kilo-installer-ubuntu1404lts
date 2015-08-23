@@ -639,8 +639,9 @@ crudini --set /etc/neutron/lbaas_agent.ini DEFAULT interface_driver neutron.agen
 crudini --set /etc/neutron/lbaas_agent.ini DEFAULT ovs_use_veth True
 crudini --set /etc/neutron/lbaas_agent.ini DEFAULT device_driver neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver
 crudini --set /etc/neutron/lbaas_agent.ini DEFAULT use_namespaces True
+
 crudini --set /etc/neutron/lbaas_agent.ini haproxy user_group neutron
-crudini --set /etc/neutron/lbaas_agent.ini haproxy user_group send_gratuitous_arp 3
+crudini --set /etc/neutron/lbaas_agent.ini haproxy send_gratuitous_arp 3
 
 crudini --set /etc/neutron/neutron_lbaas.conf service_providers service_provider "LOADBALANCER:Haproxy:neutron_lbaas.services.loadbalancer.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default"
 

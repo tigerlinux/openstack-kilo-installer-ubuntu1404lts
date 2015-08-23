@@ -155,7 +155,6 @@ esac
  
 glanceworkers=`grep processor.\*: /proc/cpuinfo |wc -l`
  
- 
 crudini --set /etc/glance/glance-api.conf DEFAULT workers $glanceworkers
 crudini --set /etc/glance/glance-api.conf DEFAULT registry_host 0.0.0.0
 crudini --set /etc/glance/glance-api.conf DEFAULT registry_port 9191
@@ -178,8 +177,12 @@ crudini --set /etc/glance/glance-registry.conf database max_pool_size 10
 crudini --set /etc/glance/glance-registry.conf database max_retries 100
 crudini --set /etc/glance/glance-registry.conf database pool_timeout 10
 
-crudini --set /etc/glance/glance-api.conf DEFAULT notification_driver messagingv2
- 
+if [ $ceilometerinstall == "yes" ]
+then
+	crudini --set /etc/glance/glance-api.conf DEFAULT notification_driver messagingv2
+	crudini --set /etc/glance/glance-registry.conf DEFAULT notification_driver messagingv2
+fi
+
 case $brokerflavor in
 "qpid")
 	crudini --set /etc/glance/glance-api.conf DEFAULT notifier_strategy qpid

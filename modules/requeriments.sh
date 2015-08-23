@@ -197,21 +197,6 @@ else
 	aa-disable /etc/apparmor.d/usr.sbin.libvirtd
 	/etc/init.d/libvirt-bin restart
 
-	#
-	# PATCH !!!
-	# There is a BUG in the current libvirt versions from the mail repo
-	# The following solves this bug
-	# BUG: https://bugs.launchpad.net/ubuntu/+source/nova/+bug/1439280
-	# Files obtained from KILO STAGING PPA:
-	# http://ppa.launchpad.net/ubuntu-cloud-archive/kilo-staging/ubuntu/pool/main/libv/libvirt/
-	dpkg -i -G ./libs/libvirt/*.deb
-	aa-disable /etc/apparmor.d/usr.sbin.libvirtd
-        /etc/init.d/libvirt-bin restart
-	#
-	#
-	#
-	
-
 fi
 
 #

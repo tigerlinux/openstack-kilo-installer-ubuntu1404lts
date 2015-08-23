@@ -53,13 +53,11 @@ then
 fi
 
 
-source $keystone_admin_rc_file
+source $keystone_fulladmin_rc_file
 
 echo ""
 echo "Creating Extra Tenants"
 echo ""
-
-source $keystone_admin_rc_file
 
 for myidentityname in $extratenants
 do
