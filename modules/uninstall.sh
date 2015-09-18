@@ -124,7 +124,7 @@ DEBIAN_FRONTEND=noninteractive aptitude -y purge ceilometer-agent-notification c
 
 DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
 
-rm -f /tmp/heat-seed.txt
+rm -f /tmp/*-seed.txt
 
 #
 # And clean up swift devices if we decided to do it in oir config file
@@ -223,6 +223,7 @@ rm -f /usr/local/bin/openstack-control.sh
 rm -f /usr/local/bin/openstack-log-cleaner.sh
 rm -f /usr/local/bin/openstack-keystone-tokenflush.sh
 rm -f /usr/local/bin/openstack-vm-boot-start.sh
+rm -f /usr/local/bin/compute-and-instances-full-report.sh
 rm -f /etc/cron.d/keystone-flush-crontab
 rm -rf /var/www/cgi-bin/keystone
 rm -f /etc/apache2/sites-enabled/wsgi-keystone.conf

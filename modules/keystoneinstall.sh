@@ -90,26 +90,6 @@ fi
 echo "Installing Keystone Packages"
 
 #
-# We do some preseeding first, no matter the fact that we are going to install non-interactivelly all
-# packages later
-#
-
-echo "keystone keystone/auth-token password $SERVICE_TOKEN" > /tmp/keystone-seed.txt
-echo "keystone keystone/admin-password password $keystoneadminpass" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-password-confirm password $keystoneadminpass" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-user string admin" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-tenant-name string $keystoneadminuser" >> /tmp/keystone-seed.txt
-echo "keystone keystone/region-name string $endpointsregion" >> /tmp/keystone-seed.txt
-echo "keystone keystone/endpoint-ip string $keystonehost" >> /tmp/keystone-seed.txt
-echo "keystone keystone/register-endpoint boolean false" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-email string $keystoneadminuseremail" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-role-name string $keystoneadmintenant" >> /tmp/keystone-seed.txt
-echo "keystone keystone/configure_db boolean false" >> /tmp/keystone-seed.txt
-echo "keystone keystone/create-admin-tenant boolean false" >> /tmp/keystone-seed.txt
-
-debconf-set-selections /tmp/keystone-seed.txt
-
-#
 # We proceed to install keystone packages and it's dependencies, non-interactivelly
 #
 
@@ -145,8 +125,6 @@ update-rc.d memcached enable
 #
 
 a2enmod wsgi
-
-rm -f /tmp/keystone-seed.txt
 
 echo "Done"
 

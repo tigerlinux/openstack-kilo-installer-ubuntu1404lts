@@ -60,40 +60,6 @@ fi
 echo ""
 echo "Installing GLANCE Packages"
 
-#
-# We do some preseeding. Anyway, we are going to install interactivelly
-#
-
-echo "keystone keystone/auth-token password $SERVICE_TOKEN" > /tmp/keystone-seed.txt
-echo "keystone keystone/admin-password password $keystoneadminpass" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-password-confirm password $keystoneadminpass" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-user string admin" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-tenant-name string $keystoneadminuser" >> /tmp/keystone-seed.txt
-echo "keystone keystone/region-name string $endpointsregion" >> /tmp/keystone-seed.txt
-echo "keystone keystone/endpoint-ip string $keystonehost" >> /tmp/keystone-seed.txt
-echo "keystone keystone/register-endpoint boolean false" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-email string $keystoneadminuseremail" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-role-name string $keystoneadmintenant" >> /tmp/keystone-seed.txt
-echo "keystone keystone/configure_db boolean false" >> /tmp/keystone-seed.txt
-echo "keystone keystone/create-admin-tenant boolean false" >> /tmp/keystone-seed.txt
-
-debconf-set-selections /tmp/keystone-seed.txt
-
-echo "glance-common glance/admin-password password $glancepass" > /tmp/glance-seed.txt
-echo "glance-common glance/auth-host string $keystonehost" >> /tmp/glance-seed.txt
-echo "glance-api glance/keystone-ip string $keystonehost" >> /tmp/glance-seed.txt
-echo "glance-common glance/paste-flavor select keystone" >> /tmp/glance-seed.txt
-echo "glance-common glance/admin-tenant-name string $keystoneadmintenant" >> /tmp/glance-seed.txt
-echo "glance-api glance/endpoint-ip string $glancehost" >> /tmp/glance-seed.txt
-echo "glance-api glance/region-name string $endpointsregion" >> /tmp/glance-seed.txt
-echo "glance-api glance/register-endpoint boolean false" >> /tmp/glance-seed.txt
-echo "glance-common glance/admin-user	string $keystoneadminuser" >> /tmp/glance-seed.txt
-echo "glance-common glance/configure_db boolean false" >> /tmp/glance-seed.txt
-echo "glance-common glance/rabbit_host string $messagebrokerhost" >> /tmp/glance-seed.txt
-echo "glance-common glance/rabbit_password password $brokerpass" >> /tmp/glance-seed.txt
-echo "glance-common glance/rabbit_userid string $brokeruser" >> /tmp/glance-seed.txt
-
-debconf-set-selections /tmp/glance-seed.txt
 
 #
 # We proceed to install Glance Packages non interactivelly
@@ -105,9 +71,6 @@ DEBIAN_FRONTEND=noninteractive aptitude -y install glance glance-api glance-comm
 
 echo "Done"
 echo ""
-
-rm -f /tmp/glance-seed.txt
-rm -f /tmp/keystone-seed.txt
 
 #
 # We silently stop glance services prior to configuration

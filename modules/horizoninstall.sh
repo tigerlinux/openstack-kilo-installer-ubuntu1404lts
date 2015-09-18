@@ -71,111 +71,6 @@ a2dismod ssl
 service apache2 stop >/dev/null 2>&1
 service apache2 start
 
-#
-# We do some preseeding. Anyway, we are going to install everything non interactivelly
-#
-
-echo "keystone keystone/auth-token password $SERVICE_TOKEN" > /tmp/keystone-seed.txt
-echo "keystone keystone/admin-password password $keystoneadminpass" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-password-confirm password $keystoneadminpass" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-user string admin" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-tenant-name string $keystoneadminuser" >> /tmp/keystone-seed.txt
-echo "keystone keystone/region-name string $endpointsregion" >> /tmp/keystone-seed.txt
-echo "keystone keystone/endpoint-ip string $keystonehost" >> /tmp/keystone-seed.txt
-echo "keystone keystone/register-endpoint boolean false" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-email string $keystoneadminuseremail" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-role-name string $keystoneadmintenant" >> /tmp/keystone-seed.txt
-echo "keystone keystone/configure_db boolean false" >> /tmp/keystone-seed.txt
-echo "keystone keystone/create-admin-tenant boolean false" >> /tmp/keystone-seed.txt
-
-debconf-set-selections /tmp/keystone-seed.txt
-
-echo "glance-common glance/admin-password password $glancepass" > /tmp/glance-seed.txt
-echo "glance-common glance/auth-host string $keystonehost" >> /tmp/glance-seed.txt
-echo "glance-api glance/keystone-ip string $keystonehost" >> /tmp/glance-seed.txt
-echo "glance-common glance/paste-flavor select keystone" >> /tmp/glance-seed.txt
-echo "glance-common glance/admin-tenant-name string $keystoneadmintenant" >> /tmp/glance-seed.txt
-echo "glance-api glance/endpoint-ip string $glancehost" >> /tmp/glance-seed.txt
-echo "glance-api glance/region-name string $endpointsregion" >> /tmp/glance-seed.txt
-echo "glance-api glance/register-endpoint boolean false" >> /tmp/glance-seed.txt
-echo "glance-common glance/admin-user	string $keystoneadminuser" >> /tmp/glance-seed.txt
-echo "glance-common glance/configure_db boolean false" >> /tmp/glance-seed.txt
-echo "glance-common glance/rabbit_host string $messagebrokerhost" >> /tmp/glance-seed.txt
-echo "glance-common glance/rabbit_password password $brokerpass" >> /tmp/glance-seed.txt
-echo "glance-common glance/rabbit_userid string $brokeruser" >> /tmp/glance-seed.txt
-
-debconf-set-selections /tmp/glance-seed.txt
-
-echo "cinder-common cinder/admin-password password $cinderpass" > /tmp/cinder-seed.txt
-echo "cinder-api cinder/region-name string $endpointsregion" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/configure_db boolean false" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/admin-tenant-name string $keystoneadmintenant" >> /tmp/cinder-seed.txt
-echo "cinder-api cinder/register-endpoint boolean false" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/auth-host string $keystonehost" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/start_services boolean false" >> /tmp/cinder-seed.txt
-echo "cinder-api cinder/endpoint-ip string $cinderhost" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/volume_group string cinder-volumes" >> /tmp/cinder-seed.txt
-echo "cinder-api cinder/keystone-ip string $keystonehost" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/admin-user string $keystoneadminuser" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/rabbit_password password $brokerpass" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/rabbit_host string $messagebrokerhost" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/rabbit_userid string $brokeruser" >> /tmp/cinder-seed.txt
-
-debconf-set-selections /tmp/cinder-seed.txt
-
-echo "neutron-common neutron/admin-password password $keystoneadminpass" > /tmp/neutron-seed.txt
-echo "neutron-metadata-agent neutron/admin-password password $keystoneadminpass" >> /tmp/neutron-seed.txt
-echo "neutron-server neutron/keystone-ip string $keystonehost" >> /tmp/neutron-seed.txt
-echo "neutron-plugin-openvswitch neutron-plugin-openvswitch/local_ip string $neutronhost" >> /tmp/neutron-seed.txt
-echo "neutron-plugin-openvswitch neutron-plugin-openvswitch/configure_db boolean false" >> /tmp/neutron-seed.txt
-echo "neutron-metadata-agent neutron/region-name string $endpointsregion" >> /tmp/neutron-seed.txt
-echo "neutron-server neutron/region-name string $endpointsregion" >> /tmp/neutron-seed.txt
-echo "neutron-server neutron/register-endpoint boolean false" >> /tmp/neutron-seed.txt
-echo "neutron-plugin-openvswitch neutron-plugin-openvswitch/tenant_network_type select vlan" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/admin-user string $keystoneadminuser" >> /tmp/neutron-seed.txt
-echo "neutron-metadata-agent neutron/admin-user string $keystoneadminuser" >> /tmp/neutron-seed.txt
-echo "neutron-plugin-openvswitch neutron-plugin-openvswitch/tunnel_id_ranges string 0" >> /tmp/neutron-seed.txt
-echo "neutron-plugin-openvswitch neutron-plugin-openvswitch/enable_tunneling boolean false" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/auth-host string $keystonehost" >> /tmp/neutron-seed.txt
-echo "neutron-metadata-agent neutron/auth-host string $keystonehost" >> /tmp/neutron-seed.txt
-echo "neutron-server neutron/endpoint-ip string $neutronhost" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/admin-tenant-name string $keystoneadmintenant" >> /tmp/neutron-seed.txt
-echo "neutron-metadata-agent neutron/admin-tenant-name string $keystoneadmintenant" >> /tmp/neutron-seed.txt
-echo "openswan openswan/install_x509_certificate boolean false" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/rabbit_password password $brokerpass" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/rabbit_userid string $brokeruser" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/rabbit_host string $messagebrokerhost" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/tunnel_id_ranges string 1" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/tenant_network_type select vlan" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/enable_tunneling boolean false" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/configure_db boolean false" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/plugin-select select OpenVSwitch" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/local_ip string $neutronhost" >> /tmp/neutron-seed.txt
-
-debconf-set-selections /tmp/neutron-seed.txt
-
-echo "nova-common nova/admin-password password $keystoneadminpass" > /tmp/nova-seed.txt
-echo "nova-common nova/configure_db boolean false" >> /tmp/nova-seed.txt
-echo "nova-consoleproxy nova-consoleproxy/daemon_type select spicehtml5" >> /tmp/nova-seed.txt
-echo "nova-common nova/rabbit-host string 127.0.0.1" >> /tmp/nova-seed.txt
-echo "nova-api nova/register-endpoint boolean false" >> /tmp/nova-seed.txt
-echo "nova-common nova/my-ip string $novahost" >> /tmp/nova-seed.txt
-echo "nova-common nova/start_services boolean false" >> /tmp/nova-seed.txt
-echo "nova-common nova/admin-user string $keystoneadminuser" >> /tmp/nova-seed.txt
-echo "nova-api nova/region-name string $endpointsregion" >> /tmp/nova-seed.txt
-echo "nova-common nova/admin-tenant-name string $keystoneadmintenant" >> /tmp/nova-seed.txt
-echo "nova-api nova/endpoint-ip string $novahost" >> /tmp/nova-seed.txt
-echo "nova-api nova/keystone-ip string $keystonehost" >> /tmp/nova-seed.txt
-echo "nova-common nova/active-api multiselect ec2, osapi_compute, metadata" >> /tmp/nova-seed.txt
-echo "nova-common nova/auth-host string $keystonehost" >> /tmp/nova-seed.txt
-echo "nova-common nova/rabbit_host string $messagebrokerhost" >> /tmp/nova-seed.txt
-echo "nova-common nova/rabbit_password password $brokerpass" >> /tmp/nova-seed.txt
-echo "nova-common nova/rabbit_userid string $brokeruser" >> /tmp/nova-seed.txt
-echo "nova-common nova/neutron_url string http://$neutronhost:9696" >> /tmp/nova-seed.txt
-echo "nova-common nova/neutron_admin_password password $neutronpass" >> /tmp/nova-seed.txt
-
-debconf-set-selections /tmp/nova-seed.txt
-
 echo "openstack-dashboard-apache horizon/activate_vhost boolean true" > /tmp/dashboard-seed.txt
 echo "openstack-dashboard-apache horizon/use_ssl boolean false" >> /tmp/dashboard-seed.txt
 
@@ -218,11 +113,6 @@ echo ""
 source $keystone_admin_rc_file
 
 rm -f /tmp/dashboard-seed.txt
-rm -f /tmp/nova-seed.txt
-rm -f /tmp/neutron-seed.txt
-rm -f /tmp/cinder-seed.txt
-rm -f /tmp/glance-seed.txt
-rm -f /tmp/keystone-seed.txt
 
 echo "Configuring Horizon"
 

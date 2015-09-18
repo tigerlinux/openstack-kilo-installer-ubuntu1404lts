@@ -94,24 +94,6 @@ then
 	mongo --host $mondbhost --eval "db = db.getSiblingDB(\"$mondbname\");db.addUser({user: \"$mondbuser\",pwd: \"$mondbpass\",roles: [ \"readWrite\", \"dbAdmin\" ]})"
 fi
 
-#
-# We perform some preseeding. Anyway, we are installing noninteractivelly
-#
-
-echo "ceilometer-api ceilometer/register-endpoint boolean false" > /tmp/ceilometer-seed.txt
-echo "ceilometer-api ceilometer/region-name string $endpointsregion" >> /tmp/ceilometer-seed.txt
-echo "ceilometer-api ceilometer/endpoint-ip string $ceilometerhost" >> /tmp/ceilometer-seed.txt
-echo "ceilometer-api ceilometer/keystone-ip string $keystonehost" >> /tmp/ceilometer-seed.txt
-echo "ceilometer-common ceilometer/rabbit_password password $brokerpass" >> /tmp/ceilometer-seed.txt
-echo "ceilometer-common ceilometer/rabbit_userid string $brokeruser" >> /tmp/ceilometer-seed.txt
-echo "ceilometer-common ceilometer/rabbit_host string $messagebrokerhost" >> /tmp/ceilometer-seed.txt
-echo "ceilometer-common ceilometer/admin-password password $keystoneadminpass" >> /tmp/ceilometer-seed.txt
-echo "ceilometer-common ceilometer/admin-user string $keystoneadminuser" >> /tmp/ceilometer-seed.txt
-echo "ceilometer-common ceilometer/auth-host string $keystonehost" >> /tmp/ceilometer-seed.txt
-echo "ceilometer-common ceilometer/admin-tenant-name string $keystoneadmintenant" >> /tmp/ceilometer-seed.txt
-
-debconf-set-selections /tmp/ceilometer-seed.txt
-
 echo ""
 echo "Installing Ceilometer Packages"
 echo ""
@@ -171,8 +153,6 @@ fi
 
 source $keystone_admin_rc_file
 
-rm /tmp/ceilometer-seed.txt
-
 echo ""
 echo "Configuring Ceilometer"
 echo ""
@@ -181,20 +161,22 @@ echo ""
 # Using python based tools, we proceed to configure ceilometer
 #
 
-crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_host $keystonehost
-crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_port 35357
-crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_protocol http
+# Deprecated !
+# crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_host $keystonehost
+# crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_port 35357
+# crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_protocol http
 crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken admin_tenant_name $keystoneservicestenant
 crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken admin_user $ceilometeruser
 crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken admin_password $ceilometerpass
 crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_uri http://$keystonehost:5000/v2.0
 crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken identity_uri http://$keystonehost:35357
- 
-crudini --set /etc/ceilometer/ceilometer.conf DEFAULT os_auth_url "http://$keystonehost:35357/v2.0"
-crudini --set /etc/ceilometer/ceilometer.conf DEFAULT os_tenant_name $keystoneservicestenant
-crudini --set /etc/ceilometer/ceilometer.conf DEFAULT os_password $ceilometerpass
-crudini --set /etc/ceilometer/ceilometer.conf DEFAULT os_username $ceilometeruser
-crudini --set /etc/ceilometer/ceilometer.conf DEFAULT os_auth_region $endpointsregion
+
+# Deprecated !
+# crudini --set /etc/ceilometer/ceilometer.conf DEFAULT os_auth_url "http://$keystonehost:35357/v2.0"
+# crudini --set /etc/ceilometer/ceilometer.conf DEFAULT os_tenant_name $keystoneservicestenant
+# crudini --set /etc/ceilometer/ceilometer.conf DEFAULT os_password $ceilometerpass
+# crudini --set /etc/ceilometer/ceilometer.conf DEFAULT os_username $ceilometeruser
+# crudini --set /etc/ceilometer/ceilometer.conf DEFAULT os_auth_region $endpointsregion
  
 crudini --set /etc/ceilometer/ceilometer.conf service_credentials os_username $ceilometeruser
 crudini --set /etc/ceilometer/ceilometer.conf service_credentials os_password $ceilometerpass
@@ -387,6 +369,10 @@ then
         	start ceilometer-alarm-evaluator
 	        start ceilometer-agent-notification
 	fi
+	
+	cp ./libs/ceilometer-expirer-crontab /etc/cron.d/
+	
+	restart cron
  
 else
 	start ceilometer-agent-compute

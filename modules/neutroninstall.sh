@@ -64,89 +64,6 @@ fi
 
 echo "Installing NEUTRON packages"
 
-#
-# We do some preseeding, but we are going to install in non-interactive mode
-#
-
-echo "keystone keystone/auth-token password $SERVICE_TOKEN" > /tmp/keystone-seed.txt
-echo "keystone keystone/admin-password password $keystoneadminpass" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-password-confirm password $keystoneadminpass" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-user string admin" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-tenant-name string $keystoneadminuser" >> /tmp/keystone-seed.txt
-echo "keystone keystone/region-name string $endpointsregion" >> /tmp/keystone-seed.txt
-echo "keystone keystone/endpoint-ip string $keystonehost" >> /tmp/keystone-seed.txt
-echo "keystone keystone/register-endpoint boolean false" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-email string $keystoneadminuseremail" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-role-name string $keystoneadmintenant" >> /tmp/keystone-seed.txt
-echo "keystone keystone/configure_db boolean false" >> /tmp/keystone-seed.txt
-echo "keystone keystone/create-admin-tenant boolean false" >> /tmp/keystone-seed.txt
-
-debconf-set-selections /tmp/keystone-seed.txt
-
-echo "glance-common glance/admin-password password $glancepass" > /tmp/glance-seed.txt
-echo "glance-common glance/auth-host string $keystonehost" >> /tmp/glance-seed.txt
-echo "glance-api glance/keystone-ip string $keystonehost" >> /tmp/glance-seed.txt
-echo "glance-common glance/paste-flavor select keystone" >> /tmp/glance-seed.txt
-echo "glance-common glance/admin-tenant-name string $keystoneadmintenant" >> /tmp/glance-seed.txt
-echo "glance-api glance/endpoint-ip string $glancehost" >> /tmp/glance-seed.txt
-echo "glance-api glance/region-name string $endpointsregion" >> /tmp/glance-seed.txt
-echo "glance-api glance/register-endpoint boolean false" >> /tmp/glance-seed.txt
-echo "glance-common glance/admin-user	string $keystoneadminuser" >> /tmp/glance-seed.txt
-echo "glance-common glance/configure_db boolean false" >> /tmp/glance-seed.txt
-echo "glance-common glance/rabbit_host string $messagebrokerhost" >> /tmp/glance-seed.txt
-echo "glance-common glance/rabbit_password password $brokerpass" >> /tmp/glance-seed.txt
-echo "glance-common glance/rabbit_userid string $brokeruser" >> /tmp/glance-seed.txt
-
-debconf-set-selections /tmp/glance-seed.txt
-
-echo "cinder-common cinder/admin-password password $cinderpass" > /tmp/cinder-seed.txt
-echo "cinder-api cinder/region-name string $endpointsregion" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/configure_db boolean false" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/admin-tenant-name string $keystoneadmintenant" >> /tmp/cinder-seed.txt
-echo "cinder-api cinder/register-endpoint boolean false" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/auth-host string $keystonehost" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/start_services boolean false" >> /tmp/cinder-seed.txt
-echo "cinder-api cinder/endpoint-ip string $cinderhost" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/volume_group string cinder-volumes" >> /tmp/cinder-seed.txt
-echo "cinder-api cinder/keystone-ip string $keystonehost" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/admin-user string $keystoneadminuser" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/rabbit_password password $brokerpass" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/rabbit_host string $messagebrokerhost" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/rabbit_userid string $brokeruser" >> /tmp/cinder-seed.txt
-
-debconf-set-selections /tmp/cinder-seed.txt
-
-echo "neutron-common neutron/admin-password password $keystoneadminpass" > /tmp/neutron-seed.txt
-echo "neutron-metadata-agent neutron/admin-password password $keystoneadminpass" >> /tmp/neutron-seed.txt
-echo "neutron-server neutron/keystone-ip string $keystonehost" >> /tmp/neutron-seed.txt
-echo "neutron-plugin-openvswitch neutron-plugin-openvswitch/local_ip string $neutron_computehost" >> /tmp/neutron-seed.txt
-echo "neutron-plugin-openvswitch neutron-plugin-openvswitch/configure_db boolean false" >> /tmp/neutron-seed.txt
-echo "neutron-metadata-agent neutron/region-name string $endpointsregion" >> /tmp/neutron-seed.txt
-echo "neutron-server neutron/region-name string $endpointsregion" >> /tmp/neutron-seed.txt
-echo "neutron-server neutron/register-endpoint boolean false" >> /tmp/neutron-seed.txt
-echo "neutron-plugin-openvswitch neutron-plugin-openvswitch/tenant_network_type select vlan" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/admin-user string $keystoneadminuser" >> /tmp/neutron-seed.txt
-echo "neutron-metadata-agent neutron/admin-user string $keystoneadminuser" >> /tmp/neutron-seed.txt
-echo "neutron-plugin-openvswitch neutron-plugin-openvswitch/tunnel_id_ranges string 0" >> /tmp/neutron-seed.txt
-echo "neutron-plugin-openvswitch neutron-plugin-openvswitch/enable_tunneling boolean false" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/auth-host string $keystonehost" >> /tmp/neutron-seed.txt
-echo "neutron-metadata-agent neutron/auth-host string $keystonehost" >> /tmp/neutron-seed.txt
-echo "neutron-server neutron/endpoint-ip string $neutronhost" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/admin-tenant-name string $keystoneadmintenant" >> /tmp/neutron-seed.txt
-echo "neutron-metadata-agent neutron/admin-tenant-name string $keystoneadmintenant" >> /tmp/neutron-seed.txt
-echo "openswan openswan/install_x509_certificate boolean false" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/rabbit_password password $brokerpass" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/rabbit_userid string $brokeruser" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/rabbit_host string $messagebrokerhost" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/tunnel_id_ranges string 1" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/tenant_network_type select vlan" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/enable_tunneling boolean false" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/configure_db boolean false" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/plugin-select select ml2" >> /tmp/neutron-seed.txt
-echo "neutron-common neutron/local_ip string $neutron_computehost" >> /tmp/neutron-seed.txt
-
-
-debconf-set-selections /tmp/neutron-seed.txt
 
 #
 # First, we install Neutron Packages, including the optional ones (controlled
@@ -175,14 +92,16 @@ else
 	DEBIAN_FRONTEND=noninteractive aptitude -y install haproxy
 
 	DEBIAN_FRONTEND=noninteractive aptitude -y install neutron-server \
-		neutron-common neutron-dhcp-agent \
-		neutron-l3-agent neutron-lbaas-agent \
-		neutron-metadata-agent python-neutron \
+		neutron-common \
+		neutron-dhcp-agent \
+		neutron-l3-agent \
+		neutron-lbaas-agent \
+		neutron-metadata-agent \
+		python-neutron \
 		python-neutronclient \
 		neutron-plugin-openvswitch-agent \
 		neutron-plugin-ml2 \
 		ipset \
-		neutron-lbaas-agent \
 		python-neutron-lbaas \
 		python-neutron-fwaas
 		
@@ -221,11 +140,6 @@ echo NEUTRON_PLUGIN_CONFIG=\"/etc/neutron/plugins/ml2/ml2_conf.ini\" > /etc/defa
 #
 
 ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
-
-rm -f /tmp/neutron-seed.txt
-rm -f /tmp/cinder-seed.txt
-rm -f /tmp/glance-seed.txt
-rm -f /tmp/keystone-seed.txt
 
 if [ $neutron_in_compute_node == "yes" ]
 then
@@ -557,6 +471,9 @@ crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ovs enable_tunneling False
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ovs network_vlan_ranges $network_vlan_ranges
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ovs local_ip $neutron_computehost
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ovs bridge_mappings $bridge_mappings
+
+# Added 17-Sept-2015 - ML2 Port Security
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security
 
 #
 # Database Flavor in ML2 Plugin configured according to selected flavor in main config

@@ -59,59 +59,7 @@ fi
 echo "Installing Cinder Packages"
 
 #
-# We do some preseeding. Anyway, we are installing non interactivelly.
-#
-
-echo "keystone keystone/auth-token password $SERVICE_TOKEN" > /tmp/keystone-seed.txt
-echo "keystone keystone/admin-password password $keystoneadminpass" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-password-confirm password $keystoneadminpass" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-user string admin" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-tenant-name string $keystoneadminuser" >> /tmp/keystone-seed.txt
-echo "keystone keystone/region-name string $endpointsregion" >> /tmp/keystone-seed.txt
-echo "keystone keystone/endpoint-ip string $keystonehost" >> /tmp/keystone-seed.txt
-echo "keystone keystone/register-endpoint boolean false" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-email string $keystoneadminuseremail" >> /tmp/keystone-seed.txt
-echo "keystone keystone/admin-role-name string $keystoneadmintenant" >> /tmp/keystone-seed.txt
-echo "keystone keystone/configure_db boolean false" >> /tmp/keystone-seed.txt
-echo "keystone keystone/create-admin-tenant boolean false" >> /tmp/keystone-seed.txt
-
-debconf-set-selections /tmp/keystone-seed.txt
-
-echo "glance-common glance/admin-password password $glancepass" > /tmp/glance-seed.txt
-echo "glance-common glance/auth-host string $keystonehost" >> /tmp/glance-seed.txt
-echo "glance-api glance/keystone-ip string $keystonehost" >> /tmp/glance-seed.txt
-echo "glance-common glance/paste-flavor select keystone" >> /tmp/glance-seed.txt
-echo "glance-common glance/admin-tenant-name string $keystoneadmintenant" >> /tmp/glance-seed.txt
-echo "glance-api glance/endpoint-ip string $glancehost" >> /tmp/glance-seed.txt
-echo "glance-api glance/region-name string $endpointsregion" >> /tmp/glance-seed.txt
-echo "glance-api glance/register-endpoint boolean false" >> /tmp/glance-seed.txt
-echo "glance-common glance/admin-user	string $keystoneadminuser" >> /tmp/glance-seed.txt
-echo "glance-common glance/configure_db boolean false" >> /tmp/glance-seed.txt
-echo "glance-common glance/rabbit_host string $messagebrokerhost" >> /tmp/glance-seed.txt
-echo "glance-common glance/rabbit_password password $brokerpass" >> /tmp/glance-seed.txt
-echo "glance-common glance/rabbit_userid string $brokeruser" >> /tmp/glance-seed.txt
-
-debconf-set-selections /tmp/glance-seed.txt
-
-echo "cinder-common cinder/admin-password password $cinderpass" > /tmp/cinder-seed.txt
-echo "cinder-api cinder/region-name string $endpointsregion" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/configure_db boolean false" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/admin-tenant-name string $keystoneadmintenant" >> /tmp/cinder-seed.txt
-echo "cinder-api cinder/register-endpoint boolean false" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/auth-host string $keystonehost" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/start_services boolean false" >> /tmp/cinder-seed.txt
-echo "cinder-api cinder/endpoint-ip string $cinderhost" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/volume_group string cinder-volumes" >> /tmp/cinder-seed.txt
-echo "cinder-api cinder/keystone-ip string $keystonehost" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/admin-user string $keystoneadminuser" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/rabbit_password password $brokerpass" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/rabbit_host string $messagebrokerhost" >> /tmp/cinder-seed.txt
-echo "cinder-common cinder/rabbit_userid string $brokeruser" >> /tmp/cinder-seed.txt
-
-debconf-set-selections /tmp/cinder-seed.txt
-
-#
-# We proceed to install non interactivelly the cinder packages and dependencies
+# We proceed to install non interactivelly the cinder packages and it's dependencies
 #
 
 export DEBIAN_FRONTEND=noninteractive
@@ -119,6 +67,8 @@ export DEBIAN_FRONTEND=noninteractive
 DEBIAN_FRONTEND=noninteractive  aptitude -y install libzookeeper-mt2 libcfg6 libcpg4 sheepdog
 
 DEBIAN_FRONTEND=noninteractive aptitude -y install cinder-api cinder-common cinder-scheduler cinder-volume python-cinderclient tgt open-iscsi
+
+DEBIAN_FRONTEND=noninteractive aptitude -y install rpcbind
 
 sed -r -i 's/CINDER_ENABLE\=false/CINDER_ENABLE\=true/' /etc/default/cinder-common > /dev/null 2>&1
 
@@ -136,11 +86,9 @@ stop cinder-scheduler > /dev/null 2>&1
 stop cinder-scheduler > /dev/null 2>&1
 stop cinder-volume > /dev/null 2>&1
 stop cinder-volume > /dev/null 2>&1
+stop rpcbind > /dev/null 2>&1
+start rpcbind > /dev/null 2>&1
 
-
-rm -f /tmp/cinder-seed.txt
-rm -f /tmp/glance-seed.txt
-rm -f /tmp/keystone-seed.txt
 
 echo ""
 echo "Configuring Cinder"
@@ -205,9 +153,13 @@ crudini --set /etc/cinder/cinder.conf DEFAULT state_path /var/lib/cinder
 crudini --set /etc/cinder/cinder.conf DEFAULT volumes_dir /var/lib/cinder/volumes/
 crudini --set /etc/cinder/cinder.conf DEFAULT rootwrap_config /etc/cinder/rootwrap.conf
 
+#
+# The following section sets the possible cinder backends actually supported by this installer
+# By the moment, we can configure lvm, glusterfs and nfs
+#
 
-case $cinderconfiglvm in
-"yes")
+if [ $cinderconfiglvm == "yes" ]
+then
 	crudini --set /etc/cinder/cinder.conf DEFAULT enabled_backends lvm
 	crudini --set /etc/cinder/cinder.conf lvm volume_group $cinderlvmname
 	crudini --set /etc/cinder/cinder.conf lvm volume_driver cinder.volume.drivers.lvm.LVMVolumeDriver
@@ -215,11 +167,68 @@ case $cinderconfiglvm in
 	crudini --set /etc/cinder/cinder.conf lvm iscsi_helper tgtadm
 	crudini --set /etc/cinder/cinder.conf lvm iscsi_ip_address $cinder_iscsi_ip_address
 	crudini --set /etc/cinder/cinder.conf lvm volume_backend_name LVM_iSCSI
-;;
-"*")
-	crudini --set /etc/cinder/cinder.conf DEFAULT enabled_backends ""
-;;
-esac
+fi
+
+if [ $cinderconfigglusterfs == "yes" ]
+then
+	crudini --set /etc/cinder/cinder.conf glusterfs volume_driver "cinder.volume.drivers.glusterfs.GlusterfsDriver"
+	crudini --set /etc/cinder/cinder.conf glusterfs glusterfs_shares_config "/etc/cinder/glusterfs_shares"
+	crudini --set /etc/cinder/cinder.conf glusterfs glusterfs_mount_point_base "/var/lib/cinder/glusterfs"
+	crudini --set /etc/cinder/cinder.conf glusterfs glusterfs_sparsed_volumes True
+	crudini --set /etc/cinder/cinder.conf glusterfs glusterfs_disk_util df
+	crudini --set /etc/cinder/cinder.conf glusterfs glusterfs_qcow2_volumes True
+	crudini --set /etc/cinder/cinder.conf glusterfs volume_backend_name GLUSTERFS
+	echo $glusterfsresource > /etc/cinder/glusterfs_shares
+	chown cinder.cinder /etc/cinder/glusterfs_shares
+fi
+
+if [ $cinderconfignfs == "yes" ]
+then
+	crudini --set /etc/cinder/cinder.conf nfs volume_driver "cinder.volume.drivers.nfs.NfsDriver"
+	crudini --set /etc/cinder/cinder.conf nfs nfs_shares_config "/etc/cinder/nfs_shares"
+	crudini --set /etc/cinder/cinder.conf nfs nfs_mount_point_base "/var/lib/cinder/nfs"
+	crudini --set /etc/cinder/cinder.conf nfs nsf_disk_util df
+	crudini --set /etc/cinder/cinder.conf nfs nfs_sparsed_volumes True
+	crudini --set /etc/cinder/cinder.conf nfs nfs_mount_options $nfs_mount_options
+	crudini --set /etc/cinder/cinder.conf nfs volume_backend_name NFS
+	echo $nfsresource > /etc/cinder/nfs_shares
+	chown cinder.cinder /etc/cinder/nfs_shares
+fi
+
+backend=""
+prevgluster=""
+
+crudini --set /etc/cinder/cinder.conf DEFAULT enabled_backends ""
+
+if [ $cinderconfiglvm == "yes" ]
+then
+	prevlvm="lvm"
+	backend="lvm"
+	seplvm=","
+else
+	seplvm=""
+	prevlvm=""
+fi
+
+if [ $cinderconfignfs == "yes" ]
+then
+	prevnfs="nfs"
+	sepnfs=","
+	backend="$prevlvm$seplvm$prevnfs"
+else
+	sepnfs=""
+	prenfs=""
+fi
+
+if [ $cinderconfigglusterfs == "yes" ]
+then
+	prevgluster="glusterfs"
+	backend="$prevlvm$seplvm$prevnfs$sepnfs$prevgluster"
+else
+	prevgluster=""
+fi
+
+crudini --set /etc/cinder/cinder.conf DEFAULT enabled_backends "$backend"
  
 case $dbflavor in
 "mysql")
@@ -306,16 +315,29 @@ iptables -A INPUT -p tcp -m multiport --dports 3260,8776 -j ACCEPT
 #
 #
 #
-# But before that, we setup our backend
-case $cinderconfiglvm in
-"yes")
+# But before that, we setup our backend or backends
+#
+
+if [ $cinderconfiglvm == "yes" ]
+then
 	source $keystone_admin_rc_file
 	cinder type-create lvm
 	cinder type-key lvm set volume_backend_name=LVM_iSCSI
-	;;
-"*")
-	;;
-esac
+fi
+
+if [ $cinderconfigglusterfs == "yes" ]
+then
+	source $keystone_admin_rc_file
+	cinder type-create glusterfs
+	cinder type-key glusterfs set volume_backend_name=GLUSTERFS
+fi
+
+if [ $cinderconfignfs == "yes" ]
+then
+	source $keystone_admin_rc_file
+	cinder type-create nfs
+	cinder type-key nfs set volume_backend_name=NFS
+fi
 
 
 testcinder=`dpkg -l cinder-api 2>/dev/null|tail -n 1|grep -ci ^ii`

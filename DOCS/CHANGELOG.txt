@@ -1,3 +1,16 @@
+1.0.4.ub1404lts - September 18, 2015
+
+- New feature: Multiple cinder backends. From this version, we can configure
+  nfs and gluster along lvm. You can choose any combination of currently
+  supported cinder backends (supported by this installer), or none.
+- Most pre-seeding eliminated from main modules (keystone, glance, cinder,
+  neutron, nova, heat and sahara).
+- Some configuration items deprecated for heat and ceilometer.
+- Added crontab for mongo database expiration.
+- Deleted duplicate entry on neutron package install list.
+- ML2-Ovs port-security enabled on ML2 config.
+- Included new script for hypervisor and associated instances listing.
+
 1.0.3.ub1404lts - August 22, 2015
 
 - Bugfix: Incorrect crudini TAG's fixed for LBaaS service in neutron module.
