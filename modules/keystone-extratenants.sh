@@ -52,7 +52,6 @@ then
 	exit 0
 fi
 
-
 source $keystone_fulladmin_rc_file
 
 echo ""
@@ -67,6 +66,7 @@ do
                 --email "$myidentityname@$domainextratenants" \
                 $myidentityname
 	openstack role add --project $myidentityname --user $myidentityname $keystonememberrole
+	openstack role add --project $myidentityname --user $myidentityname $keystoneuserrole
 done
 
 sync

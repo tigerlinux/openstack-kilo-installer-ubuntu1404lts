@@ -122,6 +122,10 @@ DEBIAN_FRONTEND=noninteractive aptitude -y purge qemu-utils qemu-system qemu-uti
 DEBIAN_FRONTEND=noninteractive aptitude -y purge ceilometer-agent-notification ceilometer-alarm-evaluator ceilometer-alarm-notifier \
 	neutron-metering-agent
 
+DEBIAN_FRONTEND=noninteractive aptitude -y purge python-neutron-fwaas
+
+DEBIAN_FRONTEND=noninteractive aptitude -y purge python-hacking python-oslo-concurrency python-oslo-config python-osprofiler
+
 DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
 
 rm -f /tmp/*-seed.txt
@@ -210,7 +214,22 @@ rm -fr  /etc/qpid \
 	/var/cache/trove \
 	/var/log/trove \
         /var/oslock/cinder \
-        /var/oslock/nova
+        /var/oslock/nova \
+	/root/keystonerc_fulladmin
+
+
+rm -f /etc/init/{keystone,glance,nova,neutron,cinder,ceilometer,sahara,trove,heat}*.override
+rm -f /var/log/upstart/{keystone,glance,nova,neutron,cinder,ceilometer,trove,heat}*
+rm -fr /var/log/{keystone,glance,nova,neutron,cinder,ceilometer,sahara,heat,trove}*
+
+rm -fr /run/{keystone,glance,nova,neutron,cinder,ceilometer,heat,trove,sahara}*
+rm -fr /run/lock/{keystone,glance,nova,neutron,cinder,ceilometer,heat,trove,sahara}*
+rm -fr /root/.{keystone,glance,nova,neutron,cinder,ceilometer,heat,trove,sahara}client
+
+rm -f /etc/cron.d/openstack-monitor-crontab
+rm -f /etc/cron.d/ceilometer-expirer-crontab
+rm -f /var/log/openstack-install.log
+rm -fr /var/lib/openstack-dashboard
 
 
 
@@ -290,6 +309,7 @@ then
 		sync
 		DEBIAN_FRONTEND=noninteractive aptitude -y purge mysql-server-5.5 mysql-server mysql-server-core-5.5 mysql-common \
 			libmysqlclient18 mysql-client-5.5
+		DEBIAN_FRONTEND=noninteractive aptitude -y purge mariadb-server-5.5  mariadb-client-5.5
 		userdel -f -r mysql
 		rm -rf /var/lib/mysql
 		rm -rf /root/.my.cnf
