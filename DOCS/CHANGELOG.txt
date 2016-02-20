@@ -1,3 +1,8 @@
+1.0.9.ub1404lts - February 20, 2016
+
+- Minor changes on trove install module and trove
+  notes on main readme.
+
 1.0.8.ub1404lts - February 18, 2016
 
 - Extensive rework of trove installation module. New
